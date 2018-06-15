@@ -20,18 +20,25 @@ router.route('/')
 
     const email = req.body.email
 
-    if(validator.nameValidator(task.name)
+    if (validator.nameValidator(task.name)
       && validator.dateTimeValidator(task.startDateTime)
       && validator.durationValidator(task.duration)
-      && validator.isInt(task.duration)) {
+      && validator.isInt(task.duration)
+      && validator.nameValidator(email)) {
 
 
       User.findOne({email}, (err, user) => {
 
 
-        if (err)
-          res.json(err)
+        if (err || user.schedule.name.length <= 0) {
+
+          res.json({status: false, message: 'failed'})
+
+
+        }
+
         else {
+          console.log("inside else")
           const schedule = user.schedule
 
           const result = findEndDate(task, schedule)
@@ -64,7 +71,7 @@ router.route('/')
 
     }
 
-    else{
+    else {
 
       res.json({status: false, message: "failed"})
     }
@@ -94,8 +101,6 @@ router.route('/')
     })
 
 
-
-
   })
 
 
@@ -109,13 +114,13 @@ function findEndDate(task, schedule) {
   const startTime = moment.utc(schedule.startTime, 'HH:mm:ss')
   const endTime = moment.utc(schedule.endTime, 'HH:mm:ss')
   const taskStartDateTime = moment(task.startDateTime)
-  const taskStartTime = moment.utc(taskStartDateTime.format('HH:mm:ss'), 'HH:mm:ss')
+  const taskStartTime = moment.utc(task.startDateTime.substring(11), 'HH:mm:ss')
   const duration = parseInt(task.duration)
-  const workHoursInSeconds = endTime.diff(moment().startOf('day'), 'seconds') - startTime.diff(moment().startOf('day'), 'seconds')
+  const workHoursInSeconds = utils.timeDifferenceInSeconds(schedule.endTime, schedule.startTime)
   const durationInSeconds = workHoursInSeconds * duration
-  const lateWorkDurationInSeconds = endTime.diff(moment().startOf('day'), 'seconds') - taskStartTime.diff(moment().startOf('day'), 'seconds')
+  const lateWorkDurationInSeconds = utils.timeDifferenceInSeconds(schedule.endTime, task.startDateTime.substring(11))
 
-  console.log("duration: " + durationInSeconds + "workHours: " + workHoursInSeconds  + "lateWork: " + lateWorkDurationInSeconds)
+  console.log("taskStartTime: " + taskStartTime + "duration: " + durationInSeconds + "workHours: " + workHoursInSeconds + "lateWork: " + lateWorkDurationInSeconds)
 
   let newDate = moment(taskStartDateTime.format('YYYY-MM-DD'))
   let i = duration
@@ -154,7 +159,7 @@ function findEndDate(task, schedule) {
 
         console.log("inside between")
 
-        if(isFirstTime){
+        if (isFirstTime) {
 
 
           console.log("first time")
@@ -167,12 +172,12 @@ function findEndDate(task, schedule) {
           console.log(durationVariable)
         }
 
-        else{
+        else {
 
 
           console.log("not first time")
 
-          if((durationVariable-workHoursInSeconds) <= 0){
+          if ((durationVariable - workHoursInSeconds) <= 0) {
 
             console.log("less than")
 
@@ -181,7 +186,7 @@ function findEndDate(task, schedule) {
             break
           }
 
-          else{
+          else {
 
             console.log("greater than")
 
@@ -194,9 +199,7 @@ function findEndDate(task, schedule) {
           }
 
 
-
         }
-
 
 
       }
@@ -219,10 +222,7 @@ function findEndDate(task, schedule) {
   return {status: true, finalDate}
 
 
-
-
 }
-
 
 
 module.exports = router

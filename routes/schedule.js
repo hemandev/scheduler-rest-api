@@ -22,7 +22,8 @@ router.route('/')
       && validator.timeValidator(schedule.startTime)
       && validator.timeValidator(schedule.endTime)
       &&validator.dateRangeValidator(schedule.startTime, schedule.endTime)
-      && validator.dayArrayValidator(schedule.days)) {
+      && validator.dayArrayValidator(schedule.days)
+      && validator.nameValidator(email)) {
 
       User.findOne({email}, (err, user) => {
 
