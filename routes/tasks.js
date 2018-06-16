@@ -51,7 +51,7 @@ router.route('/')
 
             task.endDateTime = result.finalDate
             task.workingHours = user.schedule.startTime + "-" + user.schedule.endTime
-            user.tasks.push(task)
+            user.tasks = user.tasks.concat([task])
             user.save(err => {
               if (err)
                 res.send(err)
