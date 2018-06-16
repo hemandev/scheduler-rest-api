@@ -38,7 +38,7 @@ router.route('/')
         }
 
         else {
-          console.log("inside else")
+        //  console.log("inside else")
           const schedule = user.schedule
 
           const result = findEndDate(task, schedule)
@@ -86,7 +86,7 @@ router.route('/')
     User.findOne({email: 'anand@gmail.com'}, (err, user) => {
 
 
-      console.log("length" + user.tasks.length)
+   //   console.log("length" + user.tasks.length)
 
       if (user.tasks.length > 0) {
 
@@ -109,7 +109,7 @@ function findEndDate(task, schedule) {
 
   workingDays = utils.stringToArray(schedule.days)
 
-  console.log(workingDays)
+//  console.log(workingDays)
 
   const startTime = moment.utc(schedule.startTime, 'HH:mm:ss')
   const endTime = moment.utc(schedule.endTime, 'HH:mm:ss')
@@ -120,7 +120,7 @@ function findEndDate(task, schedule) {
   const durationInSeconds = workHoursInSeconds * duration
   const lateWorkDurationInSeconds = utils.timeDifferenceInSeconds(schedule.endTime, task.startDateTime.substring(11))
 
-  console.log("taskStartTime: " + taskStartTime + "duration: " + durationInSeconds + "workHours: " + workHoursInSeconds + "lateWork: " + lateWorkDurationInSeconds)
+ // console.log("taskStartTime: " + taskStartTime + "duration: " + durationInSeconds + "workHours: " + workHoursInSeconds + "lateWork: " + lateWorkDurationInSeconds)
 
   let newDate = moment(taskStartDateTime.format('YYYY-MM-DD'))
   let i = duration
@@ -131,7 +131,7 @@ function findEndDate(task, schedule) {
 
   while (i > 0) {
 
-    console.log(newDate.weekday())
+  //  console.log(newDate.weekday())
 
     if (workingDays.includes(newDate.weekday())) {
 
@@ -157,25 +157,25 @@ function findEndDate(task, schedule) {
 
         i = 1000
 
-        console.log("inside between")
+     //   console.log("inside between")
 
         if (isFirstTime) {
 
 
-          console.log("first time")
+        //  console.log("first time")
 
           isFirstTime = false
           newDate = newDate.add(1, 'days')
           durationVariable -= lateWorkDurationInSeconds
 
 
-          console.log(durationVariable)
+      //    console.log(durationVariable)
         }
 
         else {
 
 
-          console.log("not first time")
+     //     console.log("not first time")
 
           if ((durationVariable - workHoursInSeconds) <= 0) {
 
@@ -188,12 +188,12 @@ function findEndDate(task, schedule) {
 
           else {
 
-            console.log("greater than")
+       //     console.log("greater than")
 
             newDate = newDate.add(1, 'days')
             durationVariable -= workHoursInSeconds
 
-            console.log(durationVariable)
+        //    console.log(durationVariable)
 
 
           }
@@ -218,11 +218,13 @@ function findEndDate(task, schedule) {
   }
 
 
-  console.log(finalDate)
+ // console.log(finalDate)
+  if(moment(finalDate, 'YYYY-MM-DD HH:mm:ss').isValid())
   return {status: true, finalDate}
-
+  else
+    return{status: false, message: "failed"}
 
 }
 
 
-module.exports = router
+module.exports = {router,findEndDate}

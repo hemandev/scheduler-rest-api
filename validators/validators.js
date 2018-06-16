@@ -33,27 +33,29 @@ module.exports =
 
     durationValidator(duration) {
 
-      return !isNaN(duration)  && duration > 0
+      return !isNaN(duration) && duration > 0
 
     },
 
-    dateRangeValidator(startTime, endTime){
+    dateRangeValidator(startTime, endTime) {
 
-    return !moment.utc(this.endTime, 'HH:mm:ss').isSameOrBefore(moment.utc(this.startTime, 'HH:mm:ss'))
+      return !moment.utc(this.endTime, 'HH:mm:ss').isSameOrBefore(moment.utc(this.startTime, 'HH:mm:ss'))
 
     },
 
     isInt(value) {
-      return !isNaN(value) && (function(x) { return (x | 0) === x; })(parseFloat(value))
+      return !isNaN(value) && (function (x) {
+        return (x | 0) === x;
+      })(parseFloat(value))
     },
 
-    dayArrayValidator(days){
+    dayArrayValidator(days) {
 
-      if(days.length > 0){
+      if (days.length > 0) {
 
         let dayArr = days.split(',')
-        for(item of dayArr){
-          if(!this.isInt(item))
+        for (item of dayArr) {
+          if (!this.isInt(item))
             return false
 
         }
@@ -64,7 +66,21 @@ module.exports =
       }
 
 
+    },
+
+    validateAllTasks(task) {
+
+      if (validator.nameValidator(task.name)
+        && validator.dateTimeValidator(task.startDateTime)
+        && validator.durationValidator(task.duration)
+        && validator.isInt(task.duration)
+        && validator.nameValidator(task.email))
+        return true
+      else
+        return false
+
     }
+
 
   }
 

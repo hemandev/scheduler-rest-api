@@ -22,7 +22,7 @@ app.use(function(req, res, next) {
 })
 
 const scheduleRouter = require('./routes/schedule')
-const tasksRouter = require('./routes/tasks')
+const tasksRouter = require('./routes/tasks').router
 
 app.use('/api', router)
 app.use('/api/schedule', scheduleRouter)
